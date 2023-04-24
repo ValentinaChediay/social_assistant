@@ -2,12 +2,17 @@ package com.spring.springboot.social_assistant.controller;
 
 import com.spring.springboot.social_assistant.entity.Mentee;
 import com.spring.springboot.social_assistant.entity.SocialWorker;
+import com.spring.springboot.social_assistant.exeption.NoSuchSocialWorkerException;
+import com.spring.springboot.social_assistant.exeption.SocialWorkerIncorrectData;
 import com.spring.springboot.social_assistant.service.MenteeService;
 import com.spring.springboot.social_assistant.service.SocialWorkerService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -26,7 +31,23 @@ public class SocialController {
   // Получение одного соц. работника
   @GetMapping("/socialWorkers/{id}")
   public SocialWorker getSocialWorker(@PathVariable int id) {
-    return socialWorkerService.getSocialWorker(id);
+    return getSocialWorkerFromOptional(id);
+  }
+
+  @ExceptionHandler
+  public ResponseEntity<SocialWorkerIncorrectData> handleException(NoSuchSocialWorkerException exception) {
+    SocialWorkerIncorrectData data = new SocialWorkerIncorrectData();
+    data.setInfo(exception.getMessage());
+
+    return new ResponseEntity<>(data, HttpStatus.NOT_FOUND);
+  }
+
+  @ExceptionHandler
+  public ResponseEntity<SocialWorkerIncorrectData> handleException(Exception exception) {
+    SocialWorkerIncorrectData data = new SocialWorkerIncorrectData();
+    data.setInfo(exception.getMessage());
+
+    return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
   }
 
   // Добавление соц. работника
@@ -46,7 +67,7 @@ public class SocialController {
   // Удаление работника
   @DeleteMapping("/socialWorkers/{id}")
   public String deleteSocialWorker(@PathVariable int id) {
-    SocialWorker socialWorker = socialWorkerService.getSocialWorker(id);
+    SocialWorker socialWorker = getSocialWorkerFromOptional(id);
     List<Mentee> mentees = menteeService.findAllBySocialWorker(socialWorker);
 
     for (Mentee mentee : mentees) {
@@ -55,6 +76,14 @@ public class SocialController {
     }
     socialWorkerService.deleteSocialWorker(id);
     return "SocialWorker with ID = " + id + " was deleted";
+  }
+
+  public SocialWorker getSocialWorkerFromOptional(int id) {
+    Optional<SocialWorker> optional = socialWorkerService.getSocialWorker(id);
+    if (optional.isPresent()) {
+      return optional.get();
+    }
+    throw new NoSuchSocialWorkerException("There is no social worker with ID = " + id + ".");
   }
 }
 

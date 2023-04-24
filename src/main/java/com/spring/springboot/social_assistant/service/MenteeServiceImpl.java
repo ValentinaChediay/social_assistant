@@ -26,13 +26,8 @@ public class MenteeServiceImpl implements MenteeService {
   }
 
   @Override
-  public Mentee getMentee(int id) {
-    Mentee mentee = null;
-    Optional<Mentee> optional = menteeRepository.findById(id);
-    if (optional.isPresent()) {
-      mentee = optional.get();
-    }
-    return mentee;
+  public Optional<Mentee> getMentee(int id) {
+    return menteeRepository.findById(id);
   }
 
   @Override

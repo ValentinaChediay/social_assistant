@@ -4,15 +4,16 @@ import com.spring.springboot.social_assistant.entity.Mentee;
 import com.spring.springboot.social_assistant.entity.SocialWorker;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MenteeService {
-  public List<Mentee> getAllMentees();
+  List<Mentee> getAllMentees();
 
-  public void saveMentee(Mentee mentee);
+  void saveMentee(Mentee mentee);
 
-  public Mentee getMentee(int id);
+  Optional<Mentee> getMentee(int id);
 
-  public void deleteMentee(int id);
+  void deleteMentee(int id);
 
-  public List<Mentee> findAllBySocialWorker(SocialWorker socialWorker);
+  List<Mentee> findAllBySocialWorker(SocialWorker socialWorker);
 }

@@ -25,13 +25,8 @@ public class SocialWorkerServiceImpl implements SocialWorkerService {
   }
 
   @Override
-  public SocialWorker getSocialWorker(int id) {
-    SocialWorker socialWorker = null;
-    Optional<SocialWorker> optional = socialWorkerRepository.findById(id);
-    if (optional.isPresent()) {
-      socialWorker = optional.get();
-    }
-    return socialWorker;
+  public Optional<SocialWorker> getSocialWorker(int id) {
+    return socialWorkerRepository.findById(id);
   }
 
   @Override
